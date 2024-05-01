@@ -2,19 +2,22 @@
 
 https://davidwalsh.name/browser-camera
 
-C:\Users\your_windows_username\.aws
+C:\Users\your_windows_username\\.aws
 contains
 
 config file as:
 
 [default]
-region = eu-west-2
+region = [your_region]
 
 credential file as:
 
 [default]
+
 aws_access_key_id = your_aws_access_key_id
+
 aws_secret_access_key = your_aws_secret_access_key
+
 
 [your_user_name]
 # This key identifies your AWS account.
