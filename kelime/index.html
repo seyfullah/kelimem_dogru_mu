@@ -25,12 +25,12 @@
         <h3>Fotoğraf</h3>
         <p><canvas id="canvas" width="320" height="240" style="text-align: center"></canvas></p>
         <p>
-            <input type="hidden" id="my_hidden" name="my_hidden" value="" />
+            <input type="hidden" id="my_hidden" name="my_hidden" value="" size="100"/>
         </p>
         <p><button id="submit" style="width: 75%; color:red; font-size: 24px;">Gönder</button></p>
     </div>
     <div id="div3" style="text-align: center; display: none; text-align: center">
-        <h3>Seçilen Kelime</h3>
+        <h3>Okunan Kelime</h3>
         <p>
         <h3 type="text" id="result" name="result">Sonuç</h3>
         </p>
@@ -59,7 +59,7 @@
         // Trigger photo take
         document.getElementById("snap").addEventListener("click", function () {
             context.drawImage(video, 0, 0, 320, 240);
-            let data = canvas.toDataURL('image/png');
+            let data = canvas.toDataURL('image/jpeg');
             document.getElementById('my_hidden').value = data;
             document.getElementById('div1').style.display = "none";
             document.getElementById('div2').style.display = "block";
