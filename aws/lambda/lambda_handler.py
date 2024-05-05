@@ -34,30 +34,35 @@ def lambda_handler(event, context):
         # Determine document source.
         if 'image' in event:
             # Decode the image
-            image_bytes = event['image'].encode('utf-8')
-            img_b64decoded = base64.b64decode(image_bytes)
-            image = {'Bytes': img_b64decoded}
+            image = event['image']
         elif 'body' in event:
             # Decode the image
             new_string = ''.join(event['body'].split('\r\n'))
             new_dict = json.loads(new_string)
-            image_bytes = new_dict['image'].encode('utf-8')
-            img_b64decoded = base64.b64decode(image_bytes)
-            image = {'Bytes': img_b64decoded}
-        elif 'S3Object' in event:
+            image = new_dict['image']
+        print(image)
+        image_bytes = image.encode('utf-8')
+        img_b64decoded = base64.b64decode(image_bytes)
+        image = {'Bytes': img_b64decoded}
+
+        if 'S3Object' in event:
             image = {'S3Object':
                      {'Bucket':  event['S3Object']['Bucket'],
                       'Name': event['S3Object']['Name']}
                      }
-        else:
-            raise ValueError('Invalid source. Only image base 64 encoded image bytes or S3Object are supported.')
+
 
         # Analyze the document.
         response = textract_client.detect_document_text(Document=image)
 
         # Get the Blocks
-        blocks = response['Blocks'][1]["Text"]
-
+        blocks = "Bir yazi okunamadi."
+        #print(response['Blocks'])
+        if (len(response['Blocks']) > 1):
+            blocks = response['Blocks'][1]["Text"]
+            #print('BLOCK BEGIN')
+            #print(blocks)
+            #print('BLOCK END')
         lambda_response = {
             "statusCode": 200,
             "body": json.dumps(blocks)

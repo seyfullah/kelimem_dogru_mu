@@ -16,23 +16,23 @@
         <p>Kelimenin fotoğrafını çekip gönderin. Bakalım doğru mu?</p>
     </div>
 
-    <div id="div1" style="text-align: center;">
+    <div id="divPhoto" style="text-align: center;">
         <h3>Video</h3>
         <p><video id="video" width="320" height="240" autoplay></video></p>
         <p><button id="snap" style="width: 75%; color:red; font-size: 24px;">Fotoğraf Çek</button></p>
     </div>
-    <div id="div2" style="text-align: center; display: none;">
+    <div id="divCanvas" style="text-align: center; display: none;">
         <h3>Fotoğraf</h3>
         <p><canvas id="canvas" width="320" height="240" style="text-align: center"></canvas></p>
         <p>
-            <input type="hidden" id="my_hidden" name="my_hidden" value="" size="100"/>
+            <input type="hidden" id="my_hidden" name="my_hidden" value="" size="100" />
         </p>
         <p><button id="submit" style="width: 75%; color:red; font-size: 24px;">Gönder</button></p>
     </div>
-    <div id="div3" style="text-align: center; display: none; text-align: center">
+    <div id="divResult" style="text-align: center; display: none;">
         <h3>Okunan Kelime</h3>
         <p>
-        <h3 type="text" id="result" name="result">Sonuç</h3>
+        <h3 type="text" id="result" name="result">-</h3>
         </p>
         <p><button id="refresh" style="width: 75%; color:red; font-size: 24px;">Yeniden Başla</button></p>
     </div>
@@ -45,7 +45,6 @@
         if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             // Not adding `{ audio: true }` since we only want video now
             navigator.mediaDevices.getUserMedia({ video: true }).then(function (stream) {
-                //video.src = window.URL.createObjectURL(stream);
                 video.srcObject = stream;
                 video.play();
             });
@@ -54,40 +53,42 @@
         // Elements for taking the snapshot
         var canvas = document.getElementById('canvas');
         var context = canvas.getContext('2d');
-        var video = document.getElementById('video');
 
         // Trigger photo take
         document.getElementById("snap").addEventListener("click", function () {
             context.drawImage(video, 0, 0, 320, 240);
             let data = canvas.toDataURL('image/jpeg');
             document.getElementById('my_hidden').value = data;
-            document.getElementById('div1').style.display = "none";
-            document.getElementById('div2').style.display = "block";
+            document.getElementById('divPhoto').style.display = "none";
+            document.getElementById('divCanvas').style.display = "block";
         });
 
         document.getElementById("submit").addEventListener("click", function () {
             event.preventDefault();
+            document.getElementById("result").innerHTML = "Cevap bekleniyor...";
             const xhttp = new XMLHttpRequest();
             xhttp.open("POST", "kelime_degerlendir.php");
             xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
             xhttp.onload = function () {
                 document.getElementById("result").innerHTML = this.responseText;
+                document.getElementById('divCanvas').style.display = "none";
+                document.getElementById('divResult').style.display = "block";
+                if (this.responseText.includes("Doğru cevap")) {
+                    var audio = new Audio('dogru-open-new-level-143027.mp3');
+                    audio.play();
+                } else {
+                    var audio = new Audio('yanlis-buzzerwav-14908.mp3');
+                    audio.play();
+                }
             }
             let data = document.getElementById('my_hidden').value;
-            xhttp.send("image="+data);
-
-            document.getElementById('div2').style.display = "none";
-            document.getElementById('div3').style.display = "block";
-            var audio = new Audio('dogru-open-new-level-143027.mp3');
-            audio.play();
-            // var audio = new Audio('yanlis-buzzerwav-14908.mp3');
-            // audio.play();
+            xhttp.send("image=" + data);
         });
 
         document.getElementById("refresh").addEventListener("click", function () {
             event.preventDefault();
-            document.getElementById('div1').style.display = "block";
-            document.getElementById('div3').style.display = "none";
+            document.getElementById('divPhoto').style.display = "block";
+            document.getElementById('divResult').style.display = "none";
         });
 
     </script>
